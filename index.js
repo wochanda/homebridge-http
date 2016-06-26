@@ -49,10 +49,10 @@ var pollingtoevent = require('polling-to-event');
         		})
 			}, {longpolling:true,interval:300,longpollEventName:"statuspoll"});
 
-		statusemitter.on("statuspoll", function(data) {       
-        	var binaryState = parseInt(data);
-	    	that.state = binaryState > 0;
-			that.log(that.service, "received power",that.status_url, "state is currently", binaryState); 
+		statusemitter.on("statuspoll", function(data) {
+        	var resp = JSON.parse(data);
+	    	that.state = resp.on;
+			that.log(that.service, "received power",that.status_url, "state is currently", resp.on); 
 			// switch used to easily add additonal services
 			switch (that.service) {
 				case "Switch":
@@ -162,9 +162,9 @@ var pollingtoevent = require('polling-to-event');
 		this.log('HTTP get power function failed: %s', error.message);
 		callback(error);
 	} else {
-		var binaryState = parseInt(responseBody);
-		var powerOn = binaryState > 0;
-		this.log("Power state is currently %s", binaryState);
+		var resp = JSON.parse(responseBody);
+		var powerOn = resp.on;
+		this.log("Power state is currently %s", powerOn);
 		callback(null, powerOn);
 	}
 	}.bind(this));
